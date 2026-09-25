@@ -511,6 +511,7 @@ function startApp() {
     apiKey = key;
     try { localStorage.setItem('lc_api_key', key); } catch(e) {}
     document.getElementById('setupOverlay').style.display = 'none';
+    if (typeof shouldShowOnboarding === 'function' && shouldShowOnboarding()) openOnboarding();
   } catch(e) {
     alert('Fehler beim Starten: ' + e.message);
   }
@@ -542,8 +543,12 @@ try {
     sendBtn.className = `send-btn ${hasText && !isProcessing ? 'active' : 'disabled'}`;
   });
 
-  if (apiKey) document.getElementById('setupOverlay').style.display = 'none';
-  else { const inp = document.getElementById('apiKeyInput'); if (inp) inp.focus(); }
+  if (apiKey) {
+    document.getElementById('setupOverlay').style.display = 'none';
+    if (typeof shouldShowOnboarding === 'function' && shouldShowOnboarding()) openOnboarding();
+  } else {
+    const inp = document.getElementById('apiKeyInput'); if (inp) inp.focus();
+  }
 } catch(e) {
   console.error('Init error:', e);
 }

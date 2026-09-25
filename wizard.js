@@ -300,6 +300,13 @@ function tabAdvanced() {
       <input type="file" id="wizardImportInput" class="wizard-file-input" accept="application/json" onchange="wizardImportFile(this)">
     </div>
     <div class="wizard-item">
+      <div class="wizard-item-title" style="margin-bottom:6px">Setup-Assistent</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="wizard-btn" onclick="closeWizard(); openOnboarding()">🚀 Setup-Assistent erneut starten</button>
+      </div>
+      <div class="wizard-hint" style="margin-top:6px">Führt dich noch einmal durch Dokument-Upload, Fragebogen oder Branchen-Vorlage. Überschreibt die aktuellen Einwände/Closings/Fragen nach Bestätigung.</div>
+    </div>
+    <div class="wizard-item">
       <div class="wizard-item-title" style="margin-bottom:6px">Zurücksetzen</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="wizard-btn danger" onclick="wizardResetDefaults()">Config auf Werkseinstellung zurücksetzen</button>

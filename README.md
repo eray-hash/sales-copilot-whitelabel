@@ -14,28 +14,48 @@ aber mit allen kundenspezifischen Inhalten aus dem Code herausgelöst.
 | `styles.css` | Design | Nein (außer Corporate-Design weicht stark ab) |
 | `app.js` | Engine: Speech Recognition, Sentiment-/Einwand-Erkennung, Claude-API-Calls, Feed | Nein |
 | `wizard.js` | Settings-Wizard (⚙️) zum Bearbeiten der Config im Browser | Nein |
+| `templates.js` | Branchen-Vorlagen für den Onboarding-Assistenten (Immobilien, Versicherung, SaaS, Handwerk, Beratung, E-Commerce) | Nein, außer ihr wollt weitere Branchen ergänzen |
+| `onboarding.js` | Geführter Setup-Assistent (Upload/Fragebogen/Vorlage) für den Erstkontakt | Nein |
 | `config.js` | **Alle Mandanten-Inhalte**: Branding, Farben, System-Prompt/Produkt, Einwände, Closings, Discovery-Fragen | **Ja — das ist die einzige Datei** |
 
 ## Neuen Kunden aufsetzen
 
-Zwei Wege, die sich kombinieren lassen:
+Drei Wege, die sich kombinieren lassen:
 
 1. **`config.js` direkt editieren** (für euch als Agentur am schnellsten):
    Ordner kopieren, `config.js` mit den Kundendaten befüllen (Branding,
    Farben, System-Prompt inkl. Preise/Pakete/USPs, Einwände, Closings,
    Discovery-Fragen), deployen.
 
-2. **Im Browser über den Settings-Wizard** (⚙️-Icon oben rechts, oder
-   "Vor dem Start konfigurieren" auf dem Setup-Screen): Alle Felder aus
-   `config.js` lassen sich live bearbeiten. Unter dem Tab "Erweitert" kann
-   die fertige Config als JSON exportiert werden — dieser Inhalt kann direkt
-   in eine neue `config.js` eingesetzt werden (`window.SALES_COPILOT_CONFIG = <JSON>`).
-   So kann z.B. auch der Kunde selbst (oder der Vertrieb) Einwände/Closings
-   nachjustieren, ohne Code anzufassen.
+2. **Der Kunde konfiguriert sich selbst über den Onboarding-Assistenten**:
+   Läuft automatisch beim allerersten Start nach Eingabe des API-Keys (oder
+   jederzeit erneut über ⚙️ → "Erweitert" → "Setup-Assistent erneut
+   starten"). Vier Optionen zur Auswahl:
+   - **Sales-Material hochladen** (PDF oder Text): Claude liest das
+     Dokument direkt (Anthropic-Dokumenten-Support, kein OCR/Parsing nötig)
+     und extrahiert daraus Einwände, Closings, Discovery-Fragen und
+     System-Prompt.
+   - **Kurzer Fragebogen**: 7 Fragen zu Produkt/Zielgruppe/Preisen/USPs,
+     Claude generiert daraus einen kompletten Entwurf.
+   - **Branchen-Vorlage**: sofort nutzbare Beispiel-Einwände aus
+     `templates.js`, kein KI-Call nötig.
+   - **Manuell/leer**: direkt in den Editor.
 
-Änderungen über den Wizard werden zusätzlich in `localStorage` des jeweiligen
-Browsers gespeichert und überschreiben `config.js` dort, bis "Auf
-Werkseinstellung zurücksetzen" geklickt wird.
+   Alle Wege außer "Manuell" münden automatisch im Settings-Wizard, wo der
+   generierte Entwurf geprüft und angepasst werden kann, bevor er per
+   "Speichern & übernehmen" aktiv wird.
+
+3. **Im Browser über den Settings-Wizard** (⚙️-Icon oben rechts): Alle
+   Felder aus `config.js` lassen sich live bearbeiten. Unter dem Tab
+   "Erweitert" kann die fertige Config als JSON exportiert werden — dieser
+   Inhalt kann direkt in eine neue `config.js` eingesetzt werden
+   (`window.SALES_COPILOT_CONFIG = <JSON>`). So kann z.B. auch der Kunde
+   selbst (oder der Vertrieb) Einwände/Closings nachjustieren, ohne Code
+   anzufassen.
+
+Änderungen über den Wizard/Onboarding-Assistenten werden zusätzlich in
+`localStorage` des jeweiligen Browsers gespeichert und überschreiben
+`config.js` dort, bis "Auf Werkseinstellung zurücksetzen" geklickt wird.
 
 ## Wichtigster Hebel für die KI-Qualität
 
