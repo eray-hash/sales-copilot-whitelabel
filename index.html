@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Copilot</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231e3a5f'/><text x='16' y='22' font-size='16' font-weight='800' text-anchor='middle' fill='white'>SC</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <div class="setup-overlay" id="setupOverlay">
+    <div class="setup-box">
+      <div class="setup-logo" id="setupLogo">SC</div>
+      <div class="setup-title" id="setupTitle">Sales Copilot</div>
+      <div class="setup-sub" id="setupSub"></div>
+      <label class="setup-label">Anthropic API Key</label>
+      <input type="password" class="setup-input" id="apiKeyInput" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')startApp()">
+      <button class="setup-start" id="startBtn">🚀 Copilot starten</button>
+      <div class="setup-hint">
+        Der API Key wird nur lokal in deinem Browser gespeichert.<br>
+        Kein Server, keine Datenübermittlung an Dritte.
+      </div>
+      <button class="setup-link" id="setupWizardLink">⚙️ Vor dem Start konfigurieren</button>
+    </div>
+  </div>
+
+  <div class="wizard-overlay" id="wizardOverlay" style="display:none"></div>
+
+  <div class="topbar">
+    <div class="logo-group">
+      <div class="logo-box" id="headerLogo">SC</div>
+      <div class="logo-text">
+        <h1 id="headerProductName">SALES COPILOT</h1>
+        <span id="headerTagline">SALES ENGINE</span>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="badge" id="sentimentBadge" style="background:#94a3b815;border:1px solid #94a3b833;color:#94a3b8">😐 Neutral</div>
+      <div class="badge" id="timerBadge" style="background:#0f162899;border:1px solid #1e3a5f33;color:#64748b;font-family:monospace;display:none">⏱ 00:00</div>
+      <div class="badge" id="objectionBadge" style="background:#e67e2215;border:1px solid #e67e2233;color:#e67e22">🛡️ <span id="objectionCount">0</span></div>
+      <div class="sens-group" id="sensGroup"></div>
+      <button class="toggle-btn on" id="autoToggle">⚡AUTO</button>
+      <button class="icon-btn" id="settingsBtn" title="Einstellungen">⚙️</button>
+    </div>
+  </div>
+
+  <div class="phases" id="phasesBar"></div>
+
+  <div class="main">
+    <div class="left">
+      <div class="mic-bar" id="micBar">
+        <button class="mic-btn start" id="micBtn">🎙️ MITHÖREN STARTEN</button>
+        <div class="live-indicator" id="liveIndicator" style="display:none">
+          <div class="wave-bars">
+            <div class="wave-bar" style="animation-delay:0s"></div>
+            <div class="wave-bar" style="animation-delay:0.1s"></div>
+            <div class="wave-bar" style="animation-delay:0.2s"></div>
+            <div class="wave-bar" style="animation-delay:0.3s"></div>
+            <div class="wave-bar" style="animation-delay:0.4s"></div>
+          </div>
+          <span class="live-label">LIVE</span>
+          <span class="interim-text" id="interimText"></span>
+        </div>
+      </div>
+      <div class="transcript-bar" id="transcriptBar" style="display:none">
+        <span class="transcript-label">📝</span> <span id="transcriptText"></span>
+      </div>
+      <div class="feed" id="feed">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🎯</div>
+          <div class="empty-title">Bereit für den Call</div>
+          <div class="empty-desc">Starte das <strong style="color:var(--accent)">Mithören</strong> für automatische Antworten oder nutze die <strong style="color:var(--cta)">Battle Cards</strong> rechts</div>
+        </div>
+      </div>
+      <div class="input-bar">
+        <input class="input-field" id="manualInput" placeholder="Einwand oder Frage eintippen..." onkeydown="if(event.key==='Enter')submitManual()">
+        <button class="send-btn disabled" id="sendBtn">➜</button>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="panel-tabs" id="panelTabs"></div>
+      <div class="panel-content" id="panelContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="wizard.js"></script>
+</body>
+</html>
