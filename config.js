@@ -13,16 +13,17 @@ window.SALES_COPILOT_CONFIG = {
 
   // ── BRANDING ──────────────────────────────────────────────────────────
   brand: {
-    companyName: "Acme AI",              // Firmenname (Setup-Screen, Titel)
+    companyName: "Fundament IT",          // Firmenname (Setup-Screen, Titel)
     productName: "Sales Copilot",         // Produktname (Header)
-    logoText: "AA",                       // 2-3 Zeichen im Logo-Icon
+    logoText: "FI",                       // Fallback-Kürzel, falls logoImage nicht lädt
+    logoImage: "assets/fundament-it-logo.svg", // echtes Logo (F-Monogramm, Violett→Türkis-Verlauf)
     tagline: "SALES ENGINE",              // kleine Zeile unter dem Produktnamen im Header
     setupHeadline: "Sales Copilot",
     setupSubline: "Dein KI-Assistent für Verkaufsgespräche.<br>Hört mit, erkennt Einwände, liefert Antworten in Echtzeit.",
     colors: {
-      primary: "#1e3a5f",
-      accent: "#4a90d9",
-      cta: "#e67e22"
+      primary: "#7c3aed",   // Violett (Corporate-Farbe Fundament IT)
+      accent: "#14b8a6",    // Türkis (Corporate-Farbe Fundament IT)
+      cta: "#e2703f"        // Warmes Terracotta (Fundament-IT-Akzent für CTAs)
     }
   },
 

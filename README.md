@@ -17,6 +17,26 @@ aber mit allen kundenspezifischen Inhalten aus dem Code herausgelöst.
 | `templates.js` | Branchen-Vorlagen für den Onboarding-Assistenten (Immobilien, Versicherung, SaaS, Handwerk, Beratung, E-Commerce) | Nein, außer ihr wollt weitere Branchen ergänzen |
 | `onboarding.js` | Geführter Setup-Assistent (Upload/Fragebogen/Vorlage) für den Erstkontakt | Nein |
 | `config.js` | **Alle Mandanten-Inhalte**: Branding, Farben, System-Prompt/Produkt, Einwände, Closings, Discovery-Fragen | **Ja — das ist die einzige Datei** |
+| `assets/` | Logo-Dateien (aktuell: `fundament-it-logo.svg`) | Ja, pro Kunde eigenes Logo hier ablegen und in `config.js → brand.logoImage` referenzieren |
+
+Diese Instanz ist aktuell mit dem echten **Fundament-IT-Branding** befüllt
+(Logo, Violett `#7c3aed` / Türkis `#14b8a6` / Terracotta `#e2703f` — die
+Corporate-Farben aus `fundament-it-website` und der Kundenpräsentation).
+Für einen neuen Mandanten `brand.logoImage` und `brand.colors` in
+`config.js` austauschen.
+
+## Jederzeit erreichbare Einstiegspunkte
+
+- **🏠 Zum Anfangsscreen**: Icon im Header springt jederzeit zurück auf den
+  Willkommens-/Setup-Screen (z.B. für eine neue Demo oder um den Copilot neu
+  zu starten). API-Key bleibt erhalten, ein ✕ oben rechts schließt den
+  Screen wieder, ohne den Key erneut eingeben zu müssen.
+- **📄 Weiteres Material hochladen** (⚙️ → Erweitert): lässt sich jederzeit
+  erneut aufrufen, auch lange nach der Ersteinrichtung. Neue Einwände,
+  Closings und Discovery-Fragen aus einem weiteren Dokument werden zu den
+  bestehenden **hinzugefügt**, nichts wird überschrieben oder gelöscht.
+  Für einen kompletten Neustart (der bestehende Einwände/Closings/Fragen
+  ersetzt) gibt es daneben "🚀 Setup-Assistent von vorn starten".
 
 ## Neuen Kunden aufsetzen
 

@@ -302,9 +302,10 @@ function tabAdvanced() {
     <div class="wizard-item">
       <div class="wizard-item-title" style="margin-bottom:6px">Setup-Assistent</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="wizard-btn" onclick="closeWizard(); openOnboarding()">🚀 Setup-Assistent erneut starten</button>
+        <button class="wizard-btn" onclick="closeWizard(); openOnboardingAddMore()">📄 Weiteres Material hochladen</button>
+        <button class="wizard-btn" onclick="closeWizard(); openOnboarding()">🚀 Setup-Assistent von vorn starten</button>
       </div>
-      <div class="wizard-hint" style="margin-top:6px">Führt dich noch einmal durch Dokument-Upload, Fragebogen oder Branchen-Vorlage. Überschreibt die aktuellen Einwände/Closings/Fragen nach Bestätigung.</div>
+      <div class="wizard-hint" style="margin-top:6px">"Weiteres Material" ergänzt Einwände/Closings/Fragen um die Inhalte eines neuen Dokuments, ohne Bestehendes zu löschen. "Von vorn starten" führt komplett neu durch Upload/Fragebogen/Vorlage und ERSETZT die aktuellen Einwände/Closings/Fragen nach Bestätigung.</div>
     </div>
     <div class="wizard-item">
       <div class="wizard-item-title" style="margin-bottom:6px">Zurücksetzen</div>

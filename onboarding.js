@@ -12,6 +12,7 @@
 let onboardingStep = 'choice';
 let onboardingUpload = { fileName: null, base64: null, mediaType: null, pastedText: '' };
 let onboardingError = '';
+let onboardingAdditive = false;
 
 const CONFIG_SCHEMA_PROMPT = `Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt (kein Markdown, keine Erklärung, kein Codeblock-Fence) exakt in diesem Schema:
 
@@ -51,6 +52,20 @@ function openOnboarding() {
   onboardingUpload = { fileName: null, base64: null, mediaType: null, pastedText: '' };
   onboardingQA = {};
   onboardingError = '';
+  onboardingAdditive = false;
+  renderOnboarding();
+  document.getElementById('onboardingOverlay').style.display = 'flex';
+}
+
+// Direkter Einstieg für "im Nachhinein noch ein Dokument hochladen": überspringt
+// die Auswahl, landet direkt beim Upload, und ERGÄNZT die bestehende Config
+// (statt sie zu ersetzen) - für Kunden, die schon eingerichtet sind und
+// einfach weiteres Material nachreichen wollen.
+function openOnboardingAddMore() {
+  onboardingStep = 'upload';
+  onboardingUpload = { fileName: null, base64: null, mediaType: null, pastedText: '' };
+  onboardingError = '';
+  onboardingAdditive = true;
   renderOnboarding();
   document.getElementById('onboardingOverlay').style.display = 'flex';
 }
@@ -62,6 +77,7 @@ function closeOnboarding(skip) {
 
 function onboardingFinish() {
   markOnboardingDone();
+  onboardingAdditive = false;
   closeOnboarding(false);
   openWizard();
 }
@@ -102,8 +118,10 @@ function stepChoice() {
 function stepUpload() {
   return `
     <div class="ob-header">
-      <div class="ob-title">📄 Sales-Material hochladen</div>
-      <div class="ob-sub">PDF oder Text-Datei (.txt/.md) hochladen, oder Text direkt einfügen. Die KI liest daraus Produkt, Einwände, Closings und Fragen heraus.</div>
+      <div class="ob-title">📄 ${onboardingAdditive ? 'Weiteres Material hochladen' : 'Sales-Material hochladen'}</div>
+      <div class="ob-sub">${onboardingAdditive
+        ? 'PDF oder Text-Datei hochladen, oder Text einfügen. Neue Einwände/Closings/Fragen werden zu den bestehenden HINZUGEFÜGT, nichts wird gelöscht.'
+        : 'PDF oder Text-Datei (.txt/.md) hochladen, oder Text direkt einfügen. Die KI liest daraus Produkt, Einwände, Closings und Fragen heraus.'}</div>
     </div>
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('obFileInput').click()">
       <div style="font-size:28px">${onboardingUpload.fileName ? '✅' : '⬆️'}</div>
@@ -118,7 +136,7 @@ function stepUpload() {
     </div>
     ${onboardingError ? `<div class="error-msg">${esc(onboardingError)}</div>` : ''}
     <div class="ob-actions">
-      <button class="wizard-btn" onclick="onboardingStep='choice'; renderOnboarding()">← Zurück</button>
+      <button class="wizard-btn" onclick="${onboardingAdditive ? "closeOnboarding(false)" : "onboardingStep='choice'; renderOnboarding()"}">${onboardingAdditive ? 'Abbrechen' : '← Zurück'}</button>
       <button class="wizard-btn primary" onclick="onboardingGenerateFromUpload()">Weiter → KI generiert Entwurf</button>
     </div>
   `;
@@ -261,35 +279,52 @@ function extractJson(raw) {
   return JSON.parse(s.slice(start, end + 1));
 }
 
-function mergeDraftIntoConfig(draft) {
-  if (draft.brand) {
-    CONFIG.brand = CONFIG.brand || {};
-    Object.assign(CONFIG.brand, draft.brand);
-  }
-  if (draft.ai && draft.ai.systemPrompt) {
-    CONFIG.ai = CONFIG.ai || {};
-    CONFIG.ai.systemPrompt = draft.ai.systemPrompt;
+function normalizeObjections(rawList, existingList) {
+  const seen = new Set((existingList || []).map(o => o.key));
+  const normalized = rawList.map((o, i) => {
+    let key = (o.key || o.title || ('obj' + i)).toString().toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 30) || ('obj' + i);
+    while (seen.has(key)) key = key + '_' + i;
+    seen.add(key);
+    return {
+      key,
+      emoji: o.emoji || '❓',
+      title: o.title || 'Einwand',
+      triggers: Array.isArray(o.triggers) ? o.triggers : [],
+      response: o.response || '',
+      powerMove: o.powerMove || '',
+    };
+  });
+  return (existingList || []).concat(normalized);
+}
+
+// additive=true: neue Einwände/Closings/Fragen werden zur bestehenden Config
+// HINZUGEFÜGT (Branding/System-Prompt bleiben unangetastet) - für "im
+// Nachhinein noch ein Dokument hochladen". additive=false (Standard):
+// bestehende Inhalte werden ERSETZT - für die initiale Einrichtung.
+function mergeDraftIntoConfig(draft, additive) {
+  if (!additive) {
+    if (draft.brand) {
+      CONFIG.brand = CONFIG.brand || {};
+      Object.assign(CONFIG.brand, draft.brand);
+    }
+    if (draft.ai && draft.ai.systemPrompt) {
+      CONFIG.ai = CONFIG.ai || {};
+      CONFIG.ai.systemPrompt = draft.ai.systemPrompt;
+    }
   }
   if (Array.isArray(draft.objections) && draft.objections.length) {
-    const seen = new Set();
-    CONFIG.objections = draft.objections.map((o, i) => {
-      let key = (o.key || o.title || ('obj' + i)).toString().toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 30) || ('obj' + i);
-      while (seen.has(key)) key = key + '_' + i;
-      seen.add(key);
-      return {
-        key,
-        emoji: o.emoji || '❓',
-        title: o.title || 'Einwand',
-        triggers: Array.isArray(o.triggers) ? o.triggers : [],
-        response: o.response || '',
-        powerMove: o.powerMove || '',
-      };
-    });
+    CONFIG.objections = normalizeObjections(draft.objections, additive ? CONFIG.objections : []);
   }
-  if (Array.isArray(draft.closings) && draft.closings.length) CONFIG.closings = draft.closings;
-  if (draft.closingsInfoBox) CONFIG.closingsInfoBox = draft.closingsInfoBox;
-  if (Array.isArray(draft.discovery) && draft.discovery.length) CONFIG.discovery = draft.discovery;
-  if (draft.discoveryInfoBox) CONFIG.discoveryInfoBox = draft.discoveryInfoBox;
+  if (Array.isArray(draft.closings) && draft.closings.length) {
+    CONFIG.closings = additive ? (CONFIG.closings || []).concat(draft.closings) : draft.closings;
+  }
+  if (Array.isArray(draft.discovery) && draft.discovery.length) {
+    CONFIG.discovery = additive ? (CONFIG.discovery || []).concat(draft.discovery) : draft.discovery;
+  }
+  if (!additive) {
+    if (draft.closingsInfoBox) CONFIG.closingsInfoBox = draft.closingsInfoBox;
+    if (draft.discoveryInfoBox) CONFIG.discoveryInfoBox = draft.discoveryInfoBox;
+  }
 }
 
 async function callOnboardingAI(userContent) {
@@ -334,7 +369,7 @@ async function onboardingGenerateFromUpload() {
       ? `Zusätzlicher Text/Kontext:\n${onboardingUpload.pastedText.trim()}\n\nErstelle daraus die Config gemäß Schema.`
       : 'Erstelle aus dem beigefügten Dokument die Config gemäß Schema.' });
     const draft = await callOnboardingAI(content);
-    mergeDraftIntoConfig(draft);
+    mergeDraftIntoConfig(draft, onboardingAdditive);
     onboardingFinish();
   } catch (err) {
     onboardingError = err.message;
@@ -355,7 +390,7 @@ async function onboardingGenerateFromQuestionnaire() {
   try {
     const lines = QUESTIONNAIRE_FIELDS.map(f => `${f.label}: ${(onboardingQA[f.id] || '(keine Angabe)').trim()}`).join('\n');
     const draft = await callOnboardingAI([{ type: 'text', text: `Erstelle die Config gemäß Schema auf Basis dieser Angaben:\n\n${lines}` }]);
-    mergeDraftIntoConfig(draft);
+    mergeDraftIntoConfig(draft, false);
     onboardingFinish();
   } catch (err) {
     onboardingError = err.message;
@@ -367,6 +402,6 @@ async function onboardingGenerateFromQuestionnaire() {
 function onboardingApplyTemplate(id) {
   const t = INDUSTRY_TEMPLATES.find(x => x.id === id);
   if (!t) return;
-  mergeDraftIntoConfig(t.config);
+  mergeDraftIntoConfig(t.config, false);
   onboardingFinish();
 }

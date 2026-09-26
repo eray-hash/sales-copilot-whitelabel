@@ -81,13 +81,25 @@ function applyBranding() {
   document.title = (b.productName || 'Sales Copilot') + (b.companyName ? ' · ' + b.companyName : '');
   setText('headerProductName', (b.productName || 'Sales Copilot').toUpperCase());
   setText('headerTagline', (b.tagline || '').toUpperCase());
-  setText('headerLogo', b.logoText || 'SC');
-  setText('setupLogo', b.logoText || 'SC');
+  setLogo('headerLogo', b);
+  setLogo('setupLogo', b);
   setText('setupTitle', b.setupHeadline || b.productName || 'Sales Copilot');
   const sub = document.getElementById('setupSub');
   if (sub) sub.innerHTML = b.setupSubline || 'Dein KI-Assistent für Verkaufsgespräche.';
 }
 function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+
+function setLogo(id, brand) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (brand.logoImage) {
+    el.style.background = 'transparent';
+    el.innerHTML = `<img src="${brand.logoImage}" alt="" style="width:100%;height:100%;object-fit:contain" onerror="this.parentElement.style.background='linear-gradient(135deg, var(--primary), var(--accent))';this.replaceWith(document.createTextNode('${(brand.logoText || 'SC').replace(/'/g, "\\'")}'))">`;
+  } else {
+    el.style.background = 'linear-gradient(135deg, var(--primary), var(--accent))';
+    el.textContent = brand.logoText || 'SC';
+  }
+}
 
 // ── Phases ───────────────────────────────────────────────────────────────
 function phases() { return CONFIG.phases || []; }
@@ -503,6 +515,18 @@ function submitManual() {
 }
 
 // ── Setup screen ─────────────────────────────────────────────────────────
+function goToStartScreen() {
+  const input = document.getElementById('apiKeyInput');
+  const closeBtn = document.getElementById('setupCloseBtn');
+  if (input) input.value = apiKey || '';
+  if (closeBtn) closeBtn.style.display = apiKey ? 'block' : 'none';
+  document.getElementById('setupOverlay').style.display = 'flex';
+}
+function closeStartScreen() {
+  if (!apiKey) return;
+  document.getElementById('setupOverlay').style.display = 'none';
+}
+
 function startApp() {
   try {
     const input = document.getElementById('apiKeyInput');
@@ -535,6 +559,8 @@ try {
   document.getElementById('autoToggle').addEventListener('click', toggleAuto);
   document.getElementById('settingsBtn').addEventListener('click', () => openWizard());
   document.getElementById('setupWizardLink').addEventListener('click', () => openWizard());
+  document.getElementById('startScreenBtn').addEventListener('click', goToStartScreen);
+  document.getElementById('setupCloseBtn').addEventListener('click', closeStartScreen);
 
   const inputField = document.getElementById('manualInput');
   const sendBtn = document.getElementById('sendBtn');

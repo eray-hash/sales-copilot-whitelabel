@@ -145,7 +145,9 @@ body {
 .empty-pinned { text-align: center; color: var(--text-dim); padding: 40px 20px; font-size: 12px; }
 
 .setup-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(6,8,15,0.95); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-.setup-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; max-width: 460px; width: 90%; text-align: center; }
+.setup-box { position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; max-width: 460px; width: 90%; text-align: center; }
+.setup-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--text-muted); font-size: 16px; cursor: pointer; line-height: 1; }
+.setup-close:hover { color: var(--text); }
 .setup-logo { width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; margin: 0 auto 16px; }
 .setup-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
 .setup-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
